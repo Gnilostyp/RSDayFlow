@@ -781,7 +781,7 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
                 monthString = [([dateFormatter shortStandaloneMonthSymbols][date.month - 1]) uppercaseString];
                 break;
             case RSDFMonthsDisplayStyleFull:
-                monthString = [dateFormatter monthSymbols][date.month - 1];
+                monthString = [([dateFormatter standaloneMonthSymbols][date.month - 1]) capitalizedString];
                 break;
         }
         
