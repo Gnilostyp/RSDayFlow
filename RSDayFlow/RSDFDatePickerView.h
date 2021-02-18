@@ -250,6 +250,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RSDFDatePickerViewDataSource <NSObject>
 
+- (NSDate *)todayDate:(RSDFDatePickerView *)view;
+
 @optional
 
 ///------------------------------

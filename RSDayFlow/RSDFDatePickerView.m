@@ -42,7 +42,6 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
 @property (nonatomic, readonly, strong) RSDFDatePickerDaysOfWeekView *daysOfWeekView;
 @property (nonatomic, readonly, strong) RSDFDatePickerCollectionView *collectionView;
 @property (nonatomic, readonly, strong) RSDFDatePickerCollectionViewLayout *collectionViewLayout;
-@property (nonatomic, readonly, strong) NSDate *today;
 @property (nonatomic, readonly, assign) NSUInteger daysInWeek;
 @property (nonatomic, readonly, strong) NSDate *selectedDate;
 
@@ -284,9 +283,6 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
 
 - (void)significantTimeChange:(NSNotification *)notification
 {
-    NSDateComponents *todayYearMonthDayComponents = [self.calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:[NSDate date]];
-    _today = [self.calendar dateFromComponents:todayYearMonthDayComponents];
-    
     [self.collectionView reloadData];
     [self restoreSelection];
 }
@@ -356,7 +352,7 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
 
 - (void)scrollToToday:(BOOL)animated
 {
-    [self scrollToDate:self.today animated:animated];
+    [self scrollToDate:[self.dataSource todayDate:self] animated:animated];
 }
 
 - (void)selectDate:(NSDate *)date
@@ -432,9 +428,6 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
             return components;
         })()) toDate:(now > self.fromDate ? now : self.fromDate) options:0]];
     }
-    
-    NSDateComponents *todayYearMonthDayComponents = [self.calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:[NSDate date]];
-    _today = [self.calendar dateFromComponents:todayYearMonthDayComponents];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(significantTimeChange:)
@@ -717,7 +710,7 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
             }
         }
         
-        NSComparisonResult result = [_today compare:cellDate];
+        NSComparisonResult result = [[self.dataSource todayDate:self] compare:cellDate];
         switch (result) {
             case NSOrderedSame: {
                 cell.today = YES;
@@ -787,7 +780,7 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
         
         monthHeader.dateLabel.text = [NSString stringWithFormat:@"%@ %tu", monthString, date.year];
         
-        RSDFDatePickerDate today = [self pickerDateFromDate:_today];
+        RSDFDatePickerDate today = [self pickerDateFromDate:[self.dataSource todayDate:self]];
         if ( (today.month == date.month) && (today.year == date.year) ) {
             monthHeader.currentMonth = YES;
         } else {
